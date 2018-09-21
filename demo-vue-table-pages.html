@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <title></title>
+</head>
+
+<body>
+  <div id="app" class="container-card-list">
+    <table border="1">
+      <tr class="table-head">
+        <th>#</th>
+        <th v-for="record in records">{{record}}</th>
+      </tr>
+      <tr v-for="(student, index) in students" v-if="(index >= numPerPage * (pageAt-1)) && (index < numPerPage * pageAt)">
+        <td>{{index+1}}</td>
+        <td v-for="record in student" contenteditable="false">
+          <span>{{record}}</span>
+        </td>
+      </tr>
+    </table>
+    <div class="table-page-container">
+      <span class="table-page-info">显示第&nbsp;{{1 + numPerPage * (pageAt-1)}}&nbsp;至第&nbsp;{{numPerPage * pageAt}}&nbsp;条数据,&nbsp;共&nbsp;{{numTotal}}&nbsp;条数据</span>
+      <span class="table-page-bar">
+	    	<span class="table-page-bar-before" @click="pageBeforeClick">前一页</span>
+	      <span class="table-page-bar-page" v-for="num in pageNum" @click="pageNumClick(num)" :class="{clicked: num==pageAt}">{{num}}</span>
+	      <span class="table-page-bar-after" @click="pageAfterClick">下一页</span>
+      </span>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+var app = new Vue({
+  el: '#app',
+  data: {
+    records: ['学号', '姓名', '年级', '专业', '班级'],
+    students: [
+      [12345678, '张三', '大一', '数学', 1],
+      [12345679, '李四', '大二', '语文', 2],
+      [12345680, '王五', '大三', '英语', 3],
+      [12345681, '小明', '大四', '物理', 4],
+      [12345682, '小王', '大一', '化学', 5]
+    ],
+    numTotal: 0,
+    numPerPage: 30,
+    pageNum: 4,
+    pageAt: 1
+  },
+  mounted: function() {
+    for (let i = 0; i < 100; i++) {
+      //console.log(this.students[i])
+      this.students.push([12345678 + i, '123', '大三', '化学', i % 10])
+    }
+    this.numTotal = this.students.length
+    //this.pageNum = this.numTotal / this.numPerPage
+  },
+  methods: {
+  	pageBeforeClick: function() {
+  		if(this.pageAt > 1) {
+  			this.pageAt--
+  		}
+  	},
+  	pageAfterClick: function() {
+  		if(this.pageAt < this.pageNum) {
+  			this.pageAt++
+  		}
+  	},
+  	pageNumClick: function(num) {
+  		this.pageAt = num
+  	}
+  }
+})
+</script>
+<style type="text/css">
+:root {
+  --blue: rgb(0, 132, 255);
+  --blue-hover: rgb(15, 79, 207);
+  --grey-menu: rgb(88, 88, 106);
+  --grey-hover: rgb(210, 210, 210);
+  --grey-shadow: rgb(190, 190, 190);
+  --grey-background: rgb(240, 240, 240);
+}
+
+body {
+  background-color: var(--grey-background);
+}
+
+.container-card-list {
+  margin: 25px 300px 25px 300px;
+  text-align: left;
+  padding: 20px;
+  /*alert($('.container-card-list').width())不包含margin，但是会减去padding
+  固定了width，才能在内部元素超出宽度时出现滚动条*/
+  /*width: 1251.32px;*/
+  width: calc(100vw - 600px);
+  background-color: white;
+  /*radius*/
+  border-radius: 3px;
+  /*shadow*/
+  box-shadow: -1px 1px 5px var(--grey-shadow);
+  overflow: auto;
+}
+
+.container-card-list table {
+  /*不会自动换行*/
+  word-break: keep-all;
+  white-space: nowrap;
+  min-width: 100%;
+  font-size: 14px;
+  border-color: var(--grey-shadow);
+}
+
+.container-card-list th,
+td {
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.container-card-list tr {
+  transition: background 0.3s;
+  -moz-transition: background 0.3s;
+  /* Firefox 4 */
+  -webkit-transition: background 0.3s;
+  /* Safari 和 Chrome */
+  -o-transition: background 0.3s;
+  /* Opera */
+}
+
+.container-card-list tr:not(.table-head):hover {
+  background-color: var(--grey-hover);
+  cursor: pointer;
+}
+
+.table-page-container {
+  margin-top: 20px;
+  font-size: 16px;
+  height: 40px;
+}
+
+.table-page-info {}
+
+.table-page-bar {
+  float: right;
+  height: 40px;
+  text-align: center;
+  border: 1px solid var(--grey-shadow);
+	border-radius: 5px;
+}
+
+.table-page-bar span:hover {
+  background-color: var(--grey-background);
+  cursor: pointer;
+}
+
+.table-page-bar-before {
+  display: inline-block;
+  width: 80px;
+  height: 38px;
+  line-height: 38px;
+  margin: auto;
+  border-right: 1px solid var(--grey-shadow);
+}
+
+.table-page-bar-page {
+  display: inline-block;
+  width: 40px;
+  height: 38px;
+  line-height: 38px;
+  margin: auto;
+  border-right: 1px solid var(--grey-shadow);
+}
+
+.table-page-bar-page.clicked {
+	background-color: var(--blue);
+	color: white;
+}
+
+.table-page-bar-after {
+  display: inline-block;
+  width: 80px;
+  height: 38px;
+  line-height: 38px;
+  margin: auto;
+}
+</style>
+
+</html>
