@@ -23,12 +23,14 @@
     </table>
     <div class="table-page-container">
       <span class="table-page-info">显示第&nbsp;{{1 + numPerPage * (pageAt-1)}}&nbsp;至第&nbsp;{{numPerPage * pageAt}}&nbsp;条数据,&nbsp;共&nbsp;{{numTotal}}&nbsp;条数据</span>
-      <span class="table-page-bar">
-	    	<span class="table-page-bar-before" @click="pageBeforeClick">前一页</span>
-	      <span class="table-page-bar-page" v-for="num in pageNum" @click="pageNumClick(num)" :class="{clicked: num==pageAt}">{{num}}</span>
-	      <span class="table-page-bar-after" @click="pageAfterClick">下一页</span>
-      </span>
+      <ul class="table-page-bar">
+        <li class="table-page-bar-before" @click="pageBeforeClick">前一页</li>
+        <li class="table-page-bar-page" v-for="num in pageNum" @click="pageNumClick(num)" :class="{clicked: num==pageAt}">{{num}}</li>
+        <li class="table-page-bar-after" @click="pageAfterClick">下一页</li>
+      </ul>
     </div>
+    <span id="aaa">123</span>
+    <span id="bbb">456</span>
   </div>
 </body>
 <script type="text/javascript">
@@ -57,23 +59,30 @@ var app = new Vue({
     //this.pageNum = this.numTotal / this.numPerPage
   },
   methods: {
-  	pageBeforeClick: function() {
-  		if(this.pageAt > 1) {
-  			this.pageAt--
-  		}
-  	},
-  	pageAfterClick: function() {
-  		if(this.pageAt < this.pageNum) {
-  			this.pageAt++
-  		}
-  	},
-  	pageNumClick: function(num) {
-  		this.pageAt = num
-  	}
+    pageBeforeClick: function() {
+      if (this.pageAt > 1) {
+        this.pageAt--
+      }
+    },
+    pageAfterClick: function() {
+      if (this.pageAt < this.pageNum) {
+        this.pageAt++
+      }
+    },
+    pageNumClick: function(num) {
+      this.pageAt = num
+    }
   }
 })
 </script>
 <style type="text/css">
+#aaa, #bbb {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  border: 1px solid var(--grey-menu);
+}
+
 :root {
   --blue: rgb(0, 132, 255);
   --blue-hover: rgb(15, 79, 207);
@@ -147,11 +156,11 @@ td {
   float: right;
   height: 40px;
   text-align: center;
-  border: 1px solid var(--grey-shadow);
-	border-radius: 5px;
 }
 
-.table-page-bar span:hover {
+.table-page-bar-before:hover,
+.table-page-bar-page:hover,
+.table-page-bar-after:hover {
   background-color: var(--grey-background);
   cursor: pointer;
 }
@@ -162,7 +171,8 @@ td {
   height: 38px;
   line-height: 38px;
   margin: auto;
-  border-right: 1px solid var(--grey-shadow);
+  border: 1px solid var(--grey-shadow);
+  border-radius: 5px;
 }
 
 .table-page-bar-page {
@@ -171,12 +181,12 @@ td {
   height: 38px;
   line-height: 38px;
   margin: auto;
-  border-right: 1px solid var(--grey-shadow);
+  border: 1px solid var(--grey-shadow);
 }
 
 .table-page-bar-page.clicked {
-	background-color: var(--blue);
-	color: white;
+  background-color: var(--blue);
+  color: white;
 }
 
 .table-page-bar-after {
@@ -185,6 +195,8 @@ td {
   height: 38px;
   line-height: 38px;
   margin: auto;
+  border: 1px solid var(--grey-shadow);
+  border-radius: 5px;
 }
 </style>
 
