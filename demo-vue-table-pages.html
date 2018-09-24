@@ -3,6 +3,7 @@
 
 <head>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
   <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <title></title>
 </head>
@@ -12,9 +13,9 @@
     <table border="1">
       <tr class="table-head">
         <th>#</th>
-        <th v-for="record in records">{{record}}</th>
+        <th v-for="record in records" @click="sortReordClik(record.id)">{{record.name}}</th>
       </tr>
-      <tr v-for="(student, index) in students" v-if="(index >= numPerPage * (pageAt-1)) && (index < numPerPage * pageAt)">
+      <tr v-for="(student, index) in orderedStudents" v-if="(index >= numPerPage * (pageAt-1)) && (index < numPerPage * pageAt)">
         <td>{{index+1}}</td>
         <td v-for="record in student" contenteditable="false">
           <span>{{record}}</span>
@@ -37,28 +38,40 @@
 var app = new Vue({
   el: '#app',
   data: {
-    records: ['学号', '姓名', '年级', '专业', '班级'],
-    students: [
-      [12345678, '张三', '大一', '数学', 1],
-      [12345679, '李四', '大二', '语文', 2],
-      [12345680, '王五', '大三', '英语', 3],
-      [12345681, '小明', '大四', '物理', 4],
-      [12345682, '小王', '大一', '化学', 5]
+    records: [{ id: 'sid', name: '学号' },
+      { id: 'name', name: '姓名' },
+      { id: 'grade', name: '年级' },
+      { id: 'major', name: '专业' },
+      { id: 'class', name: '班级' }
     ],
+    students: [],
     numTotal: 0,
     numPerPage: 30,
     pageNum: 4,
-    pageAt: 1
+    pageAt: 1,
+    sortRecord: 'sid'
   },
   mounted: function() {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
       //console.log(this.students[i])
-      this.students.push([12345678 + i, '123', '大三', '化学', i % 10])
+      this.students.push({ sid: 12345678 + i, name: '李四', grade: '大三', major: '化学', class: i % 10 })
+    }
+    for (let i = 0; i < 50; i++) {
+      //console.log(this.students[i])
+      this.students.push({ sid: 22223333 + i, name: '王五', grade: '大一', major: '数学', class: i % 4 })
     }
     this.numTotal = this.students.length
     //this.pageNum = this.numTotal / this.numPerPage
   },
+  computed: {
+    orderedStudents: function() {
+      return _.orderBy(this.students, this.sortRecord, 'asc')
+    }
+  },
   methods: {
+    sortReordClik: function(recordId) {
+      this.sortRecord = recordId
+    },
     pageBeforeClick: function() {
       if (this.pageAt > 1) {
         this.pageAt--
@@ -76,7 +89,8 @@ var app = new Vue({
 })
 </script>
 <style type="text/css">
-#aaa, #bbb {
+#aaa,
+#bbb {
   margin: 0;
   padding: 0;
   display: inline-block;
