@@ -13,7 +13,10 @@
     <table border="1">
       <tr class="table-head">
         <th>#</th>
-        <th v-for="record in records" @click="sortReordClik(record.id)">{{record.name}}</th>
+        <th v-for="record in records" @click="sortReordClik(record.id)">
+          {{record.name}}
+          <span class="record-icon glyphicon" :class="recordHeadClass(record.id)" aria-hidden="true" title="排序"></span>
+        </th>
       </tr>
       <tr v-for="(student, index) in orderedStudents" v-if="(index >= numPerPage * (pageAt-1)) && (index < numPerPage * pageAt)">
         <td>{{index+1}}</td>
@@ -26,7 +29,7 @@
       <span class="table-page-info">显示第&nbsp;{{1 + numPerPage * (pageAt-1)}}&nbsp;至第&nbsp;{{numPerPage * pageAt}}&nbsp;条数据,&nbsp;共&nbsp;{{numTotal}}&nbsp;条数据</span>
       <ul class="table-page-bar">
         <li class="table-page-bar-before" @click="pageBeforeClick">前一页</li>
-        <li class="table-page-bar-page" v-for="num in pageNum" @click="pageNumClick(num)" :class="{clicked: num==pageAt}">{{num}}</li>
+        <li class="table-page-bar-page" v-for="num in pageNum" @click="pageNumClick(num)" :class="{clicked: num == pageAt}">{{num}}</li>
         <li class="table-page-bar-after" @click="pageAfterClick">下一页</li>
       </ul>
     </div>
@@ -49,27 +52,44 @@ var app = new Vue({
     numPerPage: 30,
     pageNum: 4,
     pageAt: 1,
-    sortRecord: 'sid'
+    sortRecord: '',
+    sortMode: ''
   },
   mounted: function() {
-    for (let i = 0; i < 50; i++) {
+    var nameList = ['张三', '李四', '王五', '周杰伦', '老斑鸠', '斗牛', '乔丹', 'paul']
+    for (let i = 0; i < 100; i++) {
       //console.log(this.students[i])
-      this.students.push({ sid: 12345678 + i, name: '李四', grade: '大三', major: '化学', class: i % 10 })
-    }
-    for (let i = 0; i < 50; i++) {
-      //console.log(this.students[i])
-      this.students.push({ sid: 22223333 + i, name: '王五', grade: '大一', major: '数学', class: i % 4 })
+      //Math.ceil(Math.random() * max) 1~max
+      //Math.floor(Math.random() * max) 0~max-1
+      this.students.push({ sid: 15350000 + Math.ceil(Math.random() * 9999), name: nameList[Math.floor(Math.random() * 8)], grade: '大三', major: '化学', class: Math.ceil(Math.random() * 10) })
     }
     this.numTotal = this.students.length
     //this.pageNum = this.numTotal / this.numPerPage
   },
   computed: {
+    //计算属性，按照选择的字段排序
     orderedStudents: function() {
-      return _.orderBy(this.students, this.sortRecord, 'asc')
+      return _.orderBy(this.students, this.sortRecord, this.sortMode)
     }
   },
   methods: {
+    //控制表头显示排序icon
+    recordHeadClass: function(recordId) {
+      if (this.sortRecord == recordId) {
+        if (this.sortMode == 'asc') return 'glyphicon-sort-by-attributes'
+        else return 'glyphicon-sort-by-attributes-alt'
+      } else {
+        return 'glyphicon-sort'
+      }
+    },
     sortReordClik: function(recordId) {
+      //第一次选择以此字段排序，默认升序，否则第二次点击就要降序
+      if (this.sortRecord == recordId) {
+        if (this.sortMode == 'asc') this.sortMode = 'desc'
+        else this.sortMode = 'asc'
+      } else {
+        this.sortMode = 'asc'
+      }
       this.sortRecord = recordId
     },
     pageBeforeClick: function() {
@@ -141,6 +161,12 @@ td {
   padding-right: 8px;
   padding-top: 4px;
   padding-bottom: 4px;
+}
+
+.container-card-list .record-icon {
+  float: right;
+  color: var(--grey-shadow);
+  padding-top: 2px;
 }
 
 .container-card-list tr {
